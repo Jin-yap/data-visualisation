@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毕业十字路口：大城市 vs 回老家</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f9f9f9;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        /* 全屏区块 */
+        .section {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            text-align: center;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 标题 & 文字 */
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #111;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #555;
+            max-width: 700px;
+            margin-bottom: 30px;
+        }
+
+        .highlight {
+            color: #e63946;
+            font-weight: bold;
+        }
+
+        .number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #e63946;
+            margin: 20px 0;
+        }
+
+        /* 双栏布局 */
+        .dual-box {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            width: 320px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .blue {
+            color: #457b9d;
+        }
+
+        .red {
+            color: #e63946;
+        }
+
+        /* 按钮组 */
+        .city-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .city-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: #eee;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .city-btn.active {
+            background: #e63946;
+            color: white;
+        }
+
+        /* 图表容器 */
+        .chart-box {
+            width: 90%;
+            max-width: 700px;
+            height: 380px;
+            margin: 30px auto;
+        }
+
+        /* 行动按钮 */
+        .action-btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-blue {
+            background: #457b9d;
+            color: white;
+        }
+
+        .btn-red {
+            background: #e63946;
+            color: white;
+        }
+
+        /* 页脚 */
+        .footer {
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 26px; }
+            .number { font-size: 36px; }
+            .dual-box { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 1. 开场钩子 -->
+    <div class="section" id="hero">
+        <div class="title">毕业，只能二选一吗？</div>
+        <div class="subtitle">回老家，还是留大城市？</div>
+        <div class="number">1222万</div>
+        <div class="subtitle">这是今年毕业生共同的选择题</div>
+    </div>
+
+    <!-- 2. 背景 Context -->
+    <div class="section">
+        <div class="title">背景 · CONTEXT</div>
+        <div class="subtitle">2025届全国高校毕业生达到<span class="highlight">1222万人</span>，再创历史新高。</div>
+        <div class="subtitle">每一个人，都在面对同一个问题：留下，还是回去。</div>
+    </div>
+
+    <!-- 3. 发展：考公热 -->
+    <div class="section">
+        <div class="title">发展 · DEVELOPMENT</div>
+        <div class="subtitle">越来越多人，挤向同一道窄门</div>
+        <div class="chart-box">
+            <canvas id="chart1"></canvas>
+        </div>
+        <div class="subtitle">5年报名人数上涨148%，平均竞争比 65:1</div>
+    </div>
+
+    <!-- 4. 发展：焦虑 -->
+    <div class="section">
+        <div class="title">窄门背后，是焦虑</div>
+        <div class="subtitle">青年失业率曾高达18.8%</div>
+        <div class="chart-box">
+            <canvas id="chart2"></canvas>
+        </div>
+    </div>
+
+    <!-- 5. 角色：小李 vs 小王 -->
+    <div class="section">
+        <div class="title">于是，他们做了不同的选择</div>
+        <div class="dual-box">
+            <div class="card">
+                <h3 class="blue">小李 · 回老家</h3>
+                <p>考公考编｜安稳</p>
+                <p>父母在身边｜房子不愁</p>
+                <p>旱涝保收，踏实生活</p>
+            </div>
+            <div class="card">
+                <h3 class="red">小王 · 留大城市</h3>
+                <p>打拼奋斗｜机会多</p>
+                <p>薪资更高｜眼界更广</p>
+                <p>趁年轻，赌一把未来</p>
+            </div>
+        </div>
+        <div class="subtitle" style="margin-top:30px;">他们都没错，但账本，比想象更现实</div>
+    </div>
+
+    <!-- 6. 互动：账本计算器 -->
+    <div class="section">
+        <div class="title">互动 · 算一笔真实的账</div>
+        <div class="city-tabs">
+            <button class="city-btn active" data-city="sh">上海</button>
+            <button class="city-btn" data-city="bj">北京</button>
+            <button class="city-btn" data-city="sz">深圳</button>
+        </div>
+
+        <div class="dual-box">
+            <div class="card">
+                <h3 class="blue">小李（老家编制）</h3>
+                <p>月收入：<span id="li-income">5500</span> 元</p>
+                <p>月房租：<span id="li-rent">1000</span> 元</p>
+                <p>月开销：<span id="li-cost">1700</span> 元</p>
+                <p>月结余：<span class="highlight" id="li-left">2800</span> 元</p>
+                <p>攒首付：<span id="li-year">4.2</span> 年</p>
+            </div>
+            <div class="card">
+                <h3 class="red">小王（大城市）</h3>
+                <p>月收入：<span id="wang-income">13544</span> 元</p>
+                <p>月房租：<span id="wang-rent">4950</span> 元</p>
+                <p>月开销：<span id="wang-cost">3200</span> 元</p>
+                <p>月结余：<span class="highlight" id="wang-left">5394</span> 元</p>
+                <p>攒首付：<span id="wang-year">22.8</span> 年</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 多维度对比 -->
+    <div class="section">
+        <div class="title">可是，为什么还要往大城市挤？</div>
+        <div class="subtitle">账本从来不是全部</div>
+        <div class="chart-box">
+            <canvas id="chart3"></canvas>
+        </div>
+    </div>
+
+    <!-- 8. Aha 顿悟 -->
+    <div class="section">
+        <div class="title">顿悟 · AHA</div>
+        <div class="subtitle" style="font-size:22px; line-height:1.8;">
+            这不是谁更聪明的选择，<br>
+            而是两种<b>失去</b>的权衡：
+        </div>
+        <div class="subtitle" style="font-size:20px; margin-top:20px;">
+            选安稳，会失去一部分可能性<br>
+            选闯荡，会失去一部分安全感
+        </div>
+        <div class="subtitle">难选，是因为题本身就很难</div>
+    </div>
+
+    <!-- 9. Action 行动 -->
+    <div class="section">
+        <div class="title">行动 · ACTION</div>
+        <div class="subtitle">没有标准答案，只有你愿意负责的生活</div>
+        <div class="subtitle" style="margin-top:20px;">
+            别用恐惧做选择，用你的心
+        </div>
+        <div style="margin-top:30px;">
+            <button class="action-btn btn-blue" onclick="alert('安稳很好，也别忘了给热爱留个出口')">我选回老家</button>
+            <button class="action-btn btn-red" onclick="alert('闯荡很酷，也别忘了给自己留条退路')">我留大城市</button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        数据来源：教育部 | 国家统计局 | 公开调研<br>
+        本页面为互动展示使用 · 完整前端实现
+    </div>
+
+    <script>
+        // 滚动监听动画
+        const sections = document.querySelectorAll('.section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.2 });
+
+        sections.forEach(s => observer.observe(s));
+
+        // 图表1：国考报名
+        new Chart(document.getElementById('chart1'), {
+            type: 'bar',
+            data: {
+                labels: ['2021', '2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: '国考报名人数（万）',
+                    data: [138, 189, 236, 291, 341],
+                    backgroundColor: '#e63946'
+                }]
+            },
+            options: { animation: { duration: 1500 } }
+        });
+
+        // 图表2：失业率
+        new Chart(document.getElementById('chart2'), {
+            type: 'line',
+            data: {
+                labels: ['8月', '9月', '10月', '11月', '12月', '1月', '2月'],
+                datasets: [{
+                    label: '青年失业率（%）',
+                    data: [18.8, 17.9, 17.2, 16.5, 15.8, 15.1, 14.6],
+                    borderColor: '#e63946',
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        });
+
+        // 图表3：雷达图
+        new Chart(document.getElementById('chart3'), {
+            type: 'radar',
+            data: {
+                labels: ['就业机会', '薪资水平', '医疗教育', '买房难度', '生活成本', '稳定性'],
+                datasets: [
+                    { label: '大城市', data: [95,90,95,30,40,60], backgroundColor: 'rgba(230,57,70,0.3)' },
+                    { label: '老家', data: [50,45,40,85,80,95], backgroundColor: 'rgba(69,123,157,0.3)' }
+                ]
+            }
+        });
+
+        // 城市切换互动
+        const btns = document.querySelectorAll('.city-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const city = btn.dataset.city;
+
+                // 切换数据
+                if (city === 'bj') {
+                    document.getElementById('wang-income').innerText = '14532';
+                    document.getElementById('wang-rent').innerText = '5200';
+                    document.getElementById('wang-left').innerText = '5832';
+                    document.getElementById('wang-year').innerText = '24.1';
+                }
+                if (city === 'sz') {
+                    document.getElementById('wang-income').innerText = '13980';
+                    document.getElementById('wang-rent').innerText = '5050';
+                    document.getElementById('wang-left').innerText = '5530';
+                    document.getElementById('wang-year').innerText = '23.5';
+                }
+                if (city === 'sh') {
+                    document.getElementById('wang-income').innerText = '13544';
+                    document.getElementById('wang-rent').innerText = '4950';
+                    document.getElementById('wang-left').innerText = '5394';
+                    document.getElementById('wang-year').innerText = '22.8';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
